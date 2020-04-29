@@ -1,7 +1,7 @@
-ClassicUPS: A Useful UPS Library
+ClassicUPS3: A Useful UPS Library
 ================================
 
-ClassicUPS is an Apache2 Licensed wrapper around the UPS API for creating
+ClassicUPS3 is an Apache2 Licensed wrapper around the UPS API for creating
 shipping labels and fetching a package's tracking status. This library by no
 means encompasses all of the UPS functionality, but it is suitable for some of
 the most common shipping-related common tasks.
@@ -22,9 +22,9 @@ Installation is easy:
 
 .. code-block:: bash
 
-    $ pip install ClassicUPS
+    $ pip install ClassicUPS3
 
-ClassicUPS depends on libxml2 and libxslt. On Ubuntu, the packages are
+ClassicUPS3 depends on libxml2 and libxslt. On Ubuntu, the packages are
 ``libxml2-dev`` and ``libxslt-dev``.
 
 Quickstart
@@ -34,7 +34,7 @@ Create a UPSConnection object, which gives you access to common UPS methods:
 
 .. code-block:: python
 
-    from ClassicUPS import UPSConnection
+    from ClassicUPS3 import UPSConnection
 
     # Credentials obtained from the UPS website
     ups = UPSConnection(license_number,

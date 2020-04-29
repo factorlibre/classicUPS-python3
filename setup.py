@@ -1,12 +1,12 @@
 from distutils.core import setup
 
 setup(
-    name='ClassicUPS',
+    name='ClassicUPS3',
     version='0.2.1',
     author='Jay Goel',
-    author_email='jay@classicspecs.com',
-    url='http://github.com/classicspecs/ClassicUPS/',
-    packages=['ClassicUPS'],
+    author_email='factorlibre@factorlibre.com',
+    url='https://github.com/factorlibre/classicUPS-python3',
+    packages=['ClassicUPS3'],
     description='Usable UPS Integration in Python',
     long_description=open('README.rst').read(),
     keywords=['UPS'],
