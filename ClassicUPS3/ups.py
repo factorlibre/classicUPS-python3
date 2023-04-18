@@ -278,6 +278,7 @@ class Shipment(object):
             dimensions = package['dimensions']
             weight = package['weight']
             packages_list.append({
+                'Description': package.get('description') or '',
                 'PackagingType': {
                     'Code': package.get('packaging_type') or '02'
                 },
