@@ -62,11 +62,9 @@ class UPSConnection(object):
                 'Password': self.password,
             }
         }
-
         xml = '''
         <?xml version="1.0"?>
         {access_request_xml}
-
         <?xml version="1.0"?>
         {api_xml}
         '''.format(
@@ -74,7 +72,6 @@ class UPSConnection(object):
             access_request_xml=dict2xml(access_request),
             api_xml=dict2xml(ups_request),
         )
-
         return xml
 
     def _transmit_request(self, url_action, ups_request):
@@ -266,7 +263,7 @@ class Shipment(object):
         'usps_delivery_confiratmion': 4,
     }
 
-    def __init__(self, ups_conn, from_addr, to_addr, packages, shipping_service, reference_numbers=None,
+    def __init__(self, ups_conn, from_addr, to_addr, info_send_paperless, sold_to, packages, shipping_service, reference_numbers=None,
                  file_format='EPL',
                  description='', dimensions_unit='IN', weight_unit='LBS',
                  delivery_confirmation=None):
@@ -365,7 +362,6 @@ class Shipment(object):
                 },
             },
         }
-
         if to_addr.get('email'):
             shipping_request['ShipmentConfirmRequest']['Shipment']['ShipmentServiceOptions'] = {
                 'ShipmentServiceOptions': [
@@ -407,7 +403,62 @@ class Shipment(object):
                     },
                 ]
             }
-
+        if info_send_paperless:
+            shipping_request['ShipmentConfirmRequest']['Shipment']['ShipmentServiceOptions']['InternationalForms'] = {
+                'ReasonForExport': info_send_paperless['reasonForExport'],
+                'TermsOfShipment': info_send_paperless['incoterms'],
+                'FormType': info_send_paperless['formType'],
+                'PurchaseOrderNumber': info_send_paperless["purchaseOrderNumber"],
+                'InvoiceNumber': info_send_paperless["invoiceNumber"],
+                'InvoiceDate': info_send_paperless["invoiceDate"],
+                'CurrencyCode': info_send_paperless["currencyCode"],
+                'FreightCharges':{
+                    'MonetaryValue': info_send_paperless['monetaryValue']
+                },
+            }
+            products_info = []
+            for product_info in info_send_paperless["product"]:
+                products_info.append(
+                    {
+                        "Description": product_info["description"],
+                        "Unit": {
+                            "Number": product_info["unit"]["number"],
+                            "Value": product_info["unit"]["value"],
+                            "UnitOfMeasurement": {
+                                "Code": product_info["unit"]["UnitOfMeasurement"]["code"],
+                                "Description":product_info["unit"]["UnitOfMeasurement"]["description"]
+                            }
+                        },
+                        "UnitOfMeasurement": {
+                                "Code": product_info["unit"]["UnitOfMeasurement"]["code"],
+                                "Description":product_info["unit"]["UnitOfMeasurement"]["description"]
+                            },
+                        "CommodityCode": product_info["commodityCode"],
+                        "PartNumber": "",
+                        "OriginCountryCode": product_info["originCountryCode"],
+                        "ProductWeight":{
+                            "UnitOfMeasurement":{
+                                "Code": product_info["productWeight"]["unitOfMeasurement"]["code"],
+                                "Description": product_info["productWeight"]["unitOfMeasurement"]["description"],
+                            },
+                            "Weight": product_info["productWeight"]["weight"],
+                        },
+                        "ProductCurrencyCode": "",
+                        "Value": product_info["unit"]["value"],
+                    }
+                )
+            shipping_request['ShipmentConfirmRequest']['Shipment']['ShipmentServiceOptions']['InternationalForms']['Product'] = products_info
+            shipping_request['ShipmentConfirmRequest']['Shipment']['SoldTo'] = {
+                        'CompanyName': to_addr['name'],
+                        'AttentionName': to_addr.get('attn') if to_addr.get('attn') else to_addr['name'],
+                        'PhoneNumber': to_addr['phone'],
+                        'Address': {
+                            'AddressLine1': to_addr['address1'],
+                            'City': to_addr['city'],
+                            'CountryCode': to_addr['country'],
+                            'PostalCode': to_addr['postal_code'],
+                        },
+                }
         if delivery_confirmation:
             shipping_request['ShipmentConfirmRequest']['Shipment']['Package']['PackageServiceOptions']['DeliveryConfirmation'] = {
                 'DCISType': self.DCIS_TYPES[delivery_confirmation]
@@ -469,11 +520,11 @@ class Shipment(object):
                         'XpciVersion': '1.0001',
                     },
                     'RequestAction': 'ShipAccept',
+                    'RequestOption': '01'
                 },
                 'ShipmentDigest': confirm_result_digest,
             }
         }
-
         self.accept_result = ups_conn._transmit_request('ship_accept', ship_accept_request)
 
     @property
