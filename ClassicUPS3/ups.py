@@ -454,6 +454,7 @@ class Shipment(object):
                         'PhoneNumber': to_addr['phone'],
                         'Address': {
                             'AddressLine1': to_addr['address1'],
+                            'StateProvinceCode': to_addr['state'] if to_addr.get('state') else '',
                             'City': to_addr['city'],
                             'CountryCode': to_addr['country'],
                             'PostalCode': to_addr['postal_code'],
