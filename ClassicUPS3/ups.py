@@ -454,6 +454,8 @@ class Shipment(object):
                         'PhoneNumber': to_addr['phone'],
                         'Address': {
                             'AddressLine1': to_addr['address1'],
+                            'AddressLine2': to_addr['address2'],
+                            'AddressLine3': to_addr['address3'],
                             'StateProvinceCode': to_addr['state'] if to_addr.get('state') else '',
                             'City': to_addr['city'],
                             'CountryCode': to_addr['country'],
@@ -483,7 +485,6 @@ class Shipment(object):
                     'Value': ref_number
                 })
             #reference_dict[0]['BarCodeIndicator'] = '1'
-
             if from_addr['country'] == 'US' and to_addr['country'] == 'US':
                 shipping_request['ShipmentConfirmRequest']['Shipment']['Package']['ReferenceNumber'] = reference_dict
             else:
@@ -502,6 +503,9 @@ class Shipment(object):
 
         if to_addr.get('address2'):
             shipping_request['ShipmentConfirmRequest']['Shipment']['ShipTo']['Address']['AddressLine2'] = to_addr['address2']
+
+        if to_addr.get('address3'):
+            shipping_request['ShipmentConfirmRequest']['Shipment']['ShipTo']['Address']['AddressLine3'] = to_addr['address3']
 
         if to_addr.get('state'):
             shipping_request['ShipmentConfirmRequest']['Shipment']['ShipTo']['Address']['StateProvinceCode'] = to_addr['state']
