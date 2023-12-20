@@ -456,7 +456,7 @@ class Shipment(object):
                             'AddressLine1': to_addr['address1'],
                             'AddressLine2': to_addr['address2'],
                             'AddressLine3': to_addr['address3'],
-                            'StateProvinceCode': to_addr['state'] if to_addr.get('state') else '',
+                            'StateProvinceCode': to_addr['state'] if to_addr.get('state') and len(to_addr.get('state')) <= 5 else '',
                             'City': to_addr['city'],
                             'CountryCode': to_addr['country'],
                             'PostalCode': to_addr['postal_code'],
