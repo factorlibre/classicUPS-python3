@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='ClassicUPS3',
-    version='0.2.1',
+    version='0.2.2',
     author='Jay Goel',
     author_email='factorlibre@factorlibre.com',
     url='https://github.com/factorlibre/classicUPS-python3',
