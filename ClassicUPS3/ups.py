@@ -80,12 +80,10 @@ class UPSConnection(object):
             url = self.test_urls[url_action]
 
         xml = self._generate_xml(url_action, ups_request)
-
         resp = requests.post(
             url,
             data=xml.replace('&', '&#38;').encode('ascii', 'xmlcharrefreplace')
         )
-
         return UPSResult(resp.text)
 
     def tracking_info(self, *args, **kwargs):
@@ -263,7 +261,7 @@ class Shipment(object):
         'usps_delivery_confiratmion': 4,
     }
 
-    def __init__(self, ups_conn, from_addr, to_addr, info_send_paperless, sold_to, packages, shipping_service, reference_numbers=None,
+    def __init__(self, ups_conn, from_addr, to_addr, info_send_paperless, sold_to, packages, shipping_service, reference_numbers=None, access_point_api=None,
                  file_format='EPL',
                  description='', dimensions_unit='IN', weight_unit='LBS',
                  delivery_confirmation=None):
@@ -362,12 +360,12 @@ class Shipment(object):
                 },
             },
         }
+        notification_code = '012' if access_point_api else '6'
         if to_addr.get('email'):
             shipping_request['ShipmentConfirmRequest']['Shipment']['ShipmentServiceOptions'] = {
-                'ShipmentServiceOptions': [
+                'Notification': [
                     {
-                        'Notification': {
-                            'NotificationCode': 6,
+                            'NotificationCode': notification_code,
                             'Email': {
                                 'EMailAddress': to_addr['email']
                             },
@@ -375,10 +373,8 @@ class Shipment(object):
                                 'Language': 'SPA',
                                 'Dialect': 97,
                             }
-                        }
                     },
                     {
-                        'Notification': {
                             'NotificationCode': 8,
                             'Email': {
                                 'EMailAddress': to_addr['email']
@@ -387,10 +383,8 @@ class Shipment(object):
                                 'Language': 'SPA',
                                 'Dialect': 97,
                             }
-                        }
                     },
                     {
-                        'Notification': {
                             'NotificationCode': 7,
                             'Email': {
                                 'EMailAddress': to_addr['email']
@@ -399,9 +393,24 @@ class Shipment(object):
                                 'Language': 'SPA',
                                 'Dialect': 97,
                             }
-                        }
                     },
                 ]
+            }
+            
+        if access_point_api:
+            shipping_request['ShipmentConfirmRequest']['Shipment']['AlternateDeliveryAddress'] = {
+                'UPSAccessPointID': access_point_api.get('id'),
+                'Name': access_point_api.get('name'),
+                'PhoneNumber': access_point_api.get('phone'),   
+                'Address': {
+                    'AddressLine1': access_point_api.get('address', {}).get('addressline'),
+                    'City': access_point_api.get('address', {}).get('city'),
+                    'PostalCode': access_point_api.get('address', {}).get('postalCode'),
+                    'CountryCode': access_point_api.get('address', {}).get('countryCode'),
+                },
+            }
+            shipping_request['ShipmentConfirmRequest']['Shipment']['ShipmentIndicationType'] = {
+                'Code': "01"
             }
         if info_send_paperless:
             shipping_request['ShipmentConfirmRequest']['Shipment']['ShipmentServiceOptions']['InternationalForms'] = {
