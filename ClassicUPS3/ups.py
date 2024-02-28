@@ -366,7 +366,7 @@ class Shipment(object):
                 'Notification': [
                     {
                             'NotificationCode': notification_code,
-                            'Email': {
+                            'EMailMessage': {
                                 'EMailAddress': to_addr['email']
                             },
                             'Locale': {
@@ -376,7 +376,7 @@ class Shipment(object):
                     },
                     {
                             'NotificationCode': 8,
-                            'Email': {
+                            'EMailMessage': {
                                 'EMailAddress': to_addr['email']
                             },
                             'Locale': {
@@ -386,7 +386,7 @@ class Shipment(object):
                     },
                     {
                             'NotificationCode': 7,
-                            'Email': {
+                            'EMailMessage': {
                                 'EMailAddress': to_addr['email']
                             },
                             'Locale': {
